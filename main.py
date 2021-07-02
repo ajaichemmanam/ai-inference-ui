@@ -43,8 +43,11 @@ WEBRTC_CLIENT_SETTINGS = ClientSettings(
 
 
 class VideoProcessor(VideoProcessorBase):
-    def __init__(self, model) -> None:
-        self.model = model
+    model: any
+
+    def __init__(self) -> None:
+        # self.model = model
+        pass
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
@@ -79,7 +82,6 @@ def main():
     if app_mode == "OpenPose-Openvino":
         st.title("Pose Detection")
         model = load_poseestimation_model()
-        video_processor = VideoProcessor(model)
 
         if media_mode == "Image":
             img_file_buffer = st.file_uploader(
@@ -100,7 +102,7 @@ def main():
                 for object, count in object_count.items():
                     st.markdown("{} ----> {}".format(object, count))
 
-        if media_mode == "Webcam":
+        elif media_mode == "Webcam":
 
             in_record_to = "./in.mp4"
             in_recorder_factory = None
@@ -116,12 +118,14 @@ def main():
                 def out_recorder_factory():
                     return MediaRecorder(str(out_record_to))
 
-            webrtc_ctx = webrtc_streamer(key="openpose filter", video_processor_factory=video_processor,
+            webrtc_ctx = webrtc_streamer(key="openpose filter", video_processor_factory=VideoProcessor,
                                          mode=WebRtcMode.SENDRECV,
                                          client_settings=WEBRTC_CLIENT_SETTINGS,
                                          in_recorder_factory=in_recorder_factory,
                                          out_recorder_factory=out_recorder_factory,
                                          async_transform=True)
+            if webrtc_ctx.video_transformer:
+                webrtc_ctx.video_transformer.model = model
         elif media_mode == "Video":
             url = st.text_input('RTSP URL Link')
             st.text('OR')
@@ -159,8 +163,11 @@ def main():
                     mode=WebRtcMode.RECVONLY,
                     client_settings=WEBRTC_CLIENT_SETTINGS,
                     player_factory=create_player,
-                    video_processor_factory=video_processor,
+                    video_processor_factory=VideoProcessor,
                 )
+
+                if webrtc_ctx.video_transformer:
+                    webrtc_ctx.video_transformer.model = model
 
 
 if __name__ == "__main__":
