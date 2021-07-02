@@ -1,4 +1,4 @@
-# ai_inference_ui
+# ai-inference-ui
 
 A streamlit based UI for showing demo of AI models
 
