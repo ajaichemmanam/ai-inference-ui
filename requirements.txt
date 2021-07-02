@@ -1,0 +1,5 @@
+numpy
+Pillow
+streamlit
+av
+streamlit_webrtc
