@@ -66,7 +66,7 @@ def load_poseestimation_model():
 
 def main():
     st.set_option('deprecation.showfileUploaderEncoding', False)
-    st.sidebar.title("Model selector")
+    st.sidebar.title("AI Inference Engine")
     app_mode = st.sidebar.selectbox(
         "Choose a model", ["None",
                            "OpenPose-Openvino"])
